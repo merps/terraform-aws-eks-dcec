@@ -19,7 +19,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${developer_user}"
       username = developer_user
-      groups   = ["${var.context.prefix}-developers"]
+      groups   = ["${var.tags.prefix}-developers"]
     }
   ]
   worker_groups_launch_template = [
@@ -38,12 +38,12 @@ locals {
 module "eks-cluster" {
   source           = "terraform-aws-modules/eks/aws"
   version          = "12.1.0"
-  cluster_name     = var.context.prefix
+  cluster_name     = var.tags.prefix
   cluster_version  = "1.16"
   write_kubeconfig = false
 
-  subnets = var.aws_vpc.private_subnets
-  vpc_id  = var.aws_vpc.vpc_id
+  subnets = var.aws_vpc_eks.private_subnets
+  vpc_id  = var.aws_vpc_eks.vpc_id
 
   worker_groups_launch_template = local.worker_groups_launch_template
 
@@ -99,7 +99,7 @@ resource "kubernetes_namespace" "eks_namespaces" {
 # create developers Role using RBAC
 resource "kubernetes_cluster_role" "iam_roles_developers" {
   metadata {
-    name = "${var.context.prefix}-developers"
+    name = "${var.tags.prefix}-developers"
   }
 
   rule {
@@ -124,13 +124,13 @@ resource "kubernetes_cluster_role" "iam_roles_developers" {
 # bind developer Users with their Role
 resource "kubernetes_cluster_role_binding" "iam_roles_developers" {
   metadata {
-    name = "${var.context.prefix}-developers"
+    name = "${var.tags.prefix}-developers"
   }
 
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = "${var.context.prefix}-developers"
+    name      = "${var.tags.prefix}-developers"
   }
 
   dynamic "subject" {

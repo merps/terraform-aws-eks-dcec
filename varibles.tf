@@ -1,18 +1,15 @@
-# import aws infra
-variable "aws_vpc" {
+# AWS VPC infra
+variable "aws_vpc_eks" {
   type = object({
-    cidr            = string
-    azs             = list(string)
     vpc_id          = string
-    private_subnets = list(string)
-    public_subnets  = list(string)
-    region          = string
+    private_subnets  = list(string)
   })
 }
-
-variable "context" {
+# tagging
+variable "tags" {
   type = object({
     prefix = string
+    environment = string
     random = string
   })
 }
