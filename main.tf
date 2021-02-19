@@ -7,7 +7,7 @@ data "aws_caller_identity" "current" {} # used for accesing Account ID and ARN
 # render Admin & Developer users list with the structure required by EKS module
 locals {
   admin_user_map_users = [
-    for admin_user in var.admin_users :
+    for admin_user in var.users.admin :
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"
       username = admin_user
@@ -15,7 +15,7 @@ locals {
     }
   ]
   developer_user_map_users = [
-    for developer_user in var.developer_users :
+    for developer_user in var.users.developer :
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${developer_user}"
       username = developer_user
@@ -24,10 +24,10 @@ locals {
   ]
   worker_groups_launch_template = [
     {
-      override_instance_types = var.asg_instance_types
-      asg_desired_capacity    = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      asg_min_size            = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      asg_max_size            = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      override_instance_types = var.asg.instance_type
+      asg_desired_capacity    = var.asg.minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      asg_min_size            = var.asg.minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      asg_max_size            = var.asg.maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot" # use Spot EC2 instances to save some money and scale more
       public_ip               = true
     },
@@ -61,11 +61,11 @@ data "aws_eks_cluster_auth" "cluster" {
 
 # deploy spot termination handler
 resource "helm_release" "spot_termination_handler" {
-  name       = var.spot_termination_handler_chart_name
-  chart      = var.spot_termination_handler_chart_name
-  repository = var.spot_termination_handler_chart_repo
-  version    = var.spot_termination_handler_chart_version
-  namespace  = var.spot_termination_handler_chart_namespace
+  name       = var.eks_helm_chart.name
+  chart      = var.eks_helm_chart.name
+  repository = var.eks_helm_chart.repo
+  version    = var.eks_helm_chart.version
+  namespace  = var.eks_helm_chart.namespace
 }
 
 # add spot fleet Autoscaling policy
@@ -80,7 +80,7 @@ resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
-    target_value = var.autoscaling_average_cpu
+    target_value = var.asg.average_cpu
   }
 }
 
@@ -134,7 +134,7 @@ resource "kubernetes_cluster_role_binding" "iam_roles_developers" {
   }
 
   dynamic "subject" {
-    for_each = toset(var.developer_users)
+    for_each = toset(var.users.developer)
 
     content {
       name      = subject.key

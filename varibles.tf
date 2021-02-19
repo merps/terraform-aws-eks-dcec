@@ -1,12 +1,15 @@
-# AWS VPC infra
+# AWS VPC EKS infrastructure
 variable "aws_vpc_eks" {
+  description = "AWS VPC EKS infrastructure for private subnet/vpc deployment"
   type = object({
     vpc_id          = string
     private_subnets  = list(string)
   })
 }
-# tagging
+
+# AWS IaC Tagging
 variable "tags" {
+  description = "AWS IaC Tagging"
   type = object({
     prefix = string
     environment = string
@@ -14,46 +17,48 @@ variable "tags" {
   })
 }
 
-# create some variables
-variable "admin_users" {
-  type        = list(string)
-  description = "List of Kubernetes admins."
+# Kubernetes RBAC Admin and Developer Users.
+variable "users" {
+  description = "Kubernetes RBAC Admin and Developer Users."
+  type = object({
+    admin = list(string)
+    developer = list(string)
+  })
 }
-variable "developer_users" {
-  type        = list(string)
-  description = "List of Kubernetes developers."
+
+# ASG parameters
+variable "asg" {
+  description = "EC2 AutoScale Parameters"
+  type = object({
+    instance_type = list(string)
+    minimum_size_by_az = number
+    maximum_size_by_az = number
+    average_cpu = number
+    })
+  default = [{
+    instance_type = ["t3.small", "t2.small"]
+    minimum_size_by_az = 1
+    maximum_size_by_az = 10
+    average_cpu = 30
+  }
+  ]
 }
-variable "asg_instance_types" {
-  type        = list(string)
-  description = "List of EC2 instance machine types to be used in EKS."
-}
-variable "autoscaling_minimum_size_by_az" {
-  type        = number
-  description = "Minimum number of EC2 instances to autoscale our EKS cluster on each AZ."
-}
-variable "autoscaling_maximum_size_by_az" {
-  type        = number
-  description = "Maximum number of EC2 instances to autoscale our EKS cluster on each AZ."
-}
-variable "autoscaling_average_cpu" {
-  type        = number
-  description = "Average CPU threshold to autoscale EKS EC2 instances."
-}
-variable "spot_termination_handler_chart_name" {
-  type        = string
-  description = "EKS Spot termination handler Helm chart name."
-}
-variable "spot_termination_handler_chart_repo" {
-  type        = string
-  description = "EKS Spot termination handler Helm repository name."
-}
-variable "spot_termination_handler_chart_version" {
-  type        = string
-  description = "EKS Spot termination handler Helm chart version."
-}
-variable "spot_termination_handler_chart_namespace" {
-  type        = string
-  description = "Kubernetes namespace to deploy EKS Spot termination handler Helm chart."
+
+# EKS Spot termination handler Helm
+variable "eks_helm_chart" {
+  description = "EKS Spot termination handler Helm"
+  type = object({
+    name = string
+    repo = string
+    version = string
+    namespace = string
+  })
+  default = [{
+    name = "aws-node-termination-handler"
+    repo = "https://aws.github.io/eks-charts"
+    version = "0.9.1"
+    namespace = "kube-system"
+  }]
 }
 
 # create some variables
