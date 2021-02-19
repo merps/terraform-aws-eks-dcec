@@ -22,12 +22,14 @@ module "vpc" {
   source  = "git@gitlab.wirelessravens.org:f5labs/f5-cwl-telegraf.git//src/modules/awsInfra/vpc"
   aws_vpc_parameters = var.aws_vpc_parameters
   tags = var.tags
+  create_min = false
+  create_max = true
 }
 
 locals {
   aws_vpc_eks = {
     vpc_id          = module.vpc.vpc_id
-    private_subnets  = module.vpc.private_subnets
+    private_subnets  = module.vpc
   }
 }
 
