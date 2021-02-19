@@ -29,18 +29,18 @@ variable "users" {
 # ASG parameters
 variable "asg" {
   description = "EC2 AutoScale Parameters"
-  default = {
-    instance_type      = ["t3.small", "t2.small"]
-    minimum_size_by_az = 1
-    maximum_size_by_az = 10
-    average_cpu        = 30
-  }
   type = object({
     instance_type      = list(string)
     minimum_size_by_az = number
     maximum_size_by_az = number
     average_cpu        = number
   })
+  default = {
+    instance_type      = ["t3.small", "t2.small"]
+    minimum_size_by_az = 1
+    maximum_size_by_az = 10
+    average_cpu        = 30
+  }
 }
 
 # EKS Spot termination handler Helm
@@ -53,10 +53,10 @@ variable "eks_helm_chart" {
     namespace = string
   })
   default = {
-      name      = "aws-node-termination-handler"
-      repo      = "https://aws.github.io/eks-charts"
-      version   = "0.9.1"
-      namespace = "kube-system"
+    name      = "aws-node-termination-handler"
+    repo      = "https://aws.github.io/eks-charts"
+    version   = "0.9.1"
+    namespace = "kube-system"
   }
 }
 
