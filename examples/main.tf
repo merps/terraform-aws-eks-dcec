@@ -33,19 +33,9 @@ locals {
 
 # Create EKS cluster as per requirements
 module "eks" {
-  source                                   = "git@gitlab.wirelessravens.org:f5labs/terraform-aws-eks-dcec.git"
-
-  admin_users                              = []
-  asg_instance_types                       = []
-  autoscaling_average_cpu                  = 0
-  autoscaling_maximum_size_by_az           = 0
-  autoscaling_minimum_size_by_az           = 0
-  aws_vpc_eks                              = {}
-  developer_users                          = []
-  namespaces                               = []
-  spot_termination_handler_chart_name      = ""
-  spot_termination_handler_chart_namespace = ""
-  spot_termination_handler_chart_repo      = ""
-  spot_termination_handler_chart_version   = ""
-  tags                                     = {}
+  source      = "git@gitlab.wirelessravens.org:f5labs/terraform-aws-eks-dcec.git"
+  aws_vpc_eks = local.aws_vpc_eks
+  namespaces  = var.aws_vpc_parameters.azs
+  tags        = local.tags
+  users       = var.users
 }

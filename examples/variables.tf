@@ -12,14 +12,12 @@ variable "tags" {
     random = string
   })
 }
-variable "admin_users" {}
 
-variable "developer_users" {}
-variable "asg_instance_types" {}
-variable "spot_termination_handler_chart_repo" {}
-variable "autoscaling_minimum_size_by_az" {}
-variable "autoscaling_maximum_size_by_az" {}
-variable "autoscaling_average_cpu" {}
-variable "spot_termination_handler_chart_name" {}
-variable "spot_termination_handler_chart_version" {}
-variable "spot_termination_handler_chart_namespace" {}
+# Kubernetes RBAC Admin and Developer Users.
+variable "users" {
+  description = "Kubernetes RBAC Admin and Developer Users."
+  type = object({
+    admin = list(string)
+    developer = list(string)
+  })
+}
