@@ -52,13 +52,12 @@ variable "eks_helm_chart" {
     version   = string
     namespace = string
   })
-  default =
-    {
+  default = {
       name      = "aws-node-termination-handler"
       repo      = "https://aws.github.io/eks-charts"
       version   = "0.9.1"
       namespace = "kube-system"
-    }
+  }
 }
 
 # create some variables
