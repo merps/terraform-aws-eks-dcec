@@ -46,12 +46,12 @@ variable "asg" {
 # EKS Spot termination handler Helm
 variable "eks_helm_chart" {
   description = "EKS Spot termination handler Helm"
-  type = map(object({
+  type = object({
     name      = string
     repo      = string
     version   = string
     namespace = string
-  }))
+  })
   default =
     {
       name      = "aws-node-termination-handler"
