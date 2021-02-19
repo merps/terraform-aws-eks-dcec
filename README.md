@@ -14,12 +14,12 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| asg | EC2 AutoScale Parameters | <pre>object({<br>    instance_type = list(string)<br>    minimum_size_by_az = number<br>    maximum_size_by_az = number<br>    average_cpu = number<br>    })</pre> | <pre>[<br>  {<br>    "average_cpu": 30,<br>    "instance_type": [<br>      "t3.small",<br>      "t2.small"<br>    ],<br>    "maximum_size_by_az": 10,<br>    "minimum_size_by_az": 1<br>  }<br>]</pre> | no |
-| aws\_vpc\_eks | AWS VPC EKS infrastructure for private subnet/vpc deployment | <pre>object({<br>    vpc_id          = string<br>    private_subnets  = list(string)<br>  })</pre> | n/a | yes |
-| eks\_helm\_chart | EKS Spot termination handler Helm | <pre>object({<br>    name = string<br>    repo = string<br>    version = string<br>    namespace = string<br>  })</pre> | <pre>[<br>  {<br>    "name": "aws-node-termination-handler",<br>    "namespace": "kube-system",<br>    "repo": "https://aws.github.io/eks-charts",<br>    "version": "0.9.1"<br>  }<br>]</pre> | no |
+| asg | EC2 AutoScale Parameters | <pre>map(object({<br>    instance_type = list(string)<br>    minimum_size_by_az = number<br>    maximum_size_by_az = number<br>    average_cpu = number<br>    }))</pre> | <pre>[<br>  {<br>    "average_cpu": 30,<br>    "instance_type": [<br>      "t3.small",<br>      "t2.small"<br>    ],<br>    "maximum_size_by_az": 10,<br>    "minimum_size_by_az": 1<br>  }<br>]</pre> | no |
+| aws\_vpc\_eks | AWS VPC EKS infrastructure for private subnet/vpc deployment | <pre>list(object({<br>    vpc_id          = string<br>    private_subnets  = list(string)<br>  }))</pre> | n/a | yes |
+| eks\_helm\_chart | EKS Spot termination handler Helm | <pre>map(object({<br>    name = string<br>    repo = string<br>    version = string<br>    namespace = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "aws-node-termination-handler",<br>    "namespace": "kube-system",<br>    "repo": "https://aws.github.io/eks-charts",<br>    "version": "0.9.1"<br>  }<br>]</pre> | no |
 | namespaces | List of namespaces to be created in our EKS Cluster. | `list(string)` | n/a | yes |
-| tags | AWS IaC Tagging | <pre>object({<br>    prefix = string<br>    environment = string<br>    random = string<br>  })</pre> | n/a | yes |
-| users | Kubernetes RBAC Admin and Developer Users. | <pre>object({<br>    admin = list(string)<br>    developer = list(string)<br>  })</pre> | n/a | yes |
+| tags | AWS IaC Tagging | <pre>list(object({<br>    prefix = string<br>    environment = string<br>    random = string<br>  }))</pre> | n/a | yes |
+| users | Kubernetes RBAC Admin and Developer Users. | <pre>list(object({<br>    admin = list(string)<br>    developer = list(string)<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 
