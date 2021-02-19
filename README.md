@@ -1,3 +1,7 @@
+## Description
+
+Rough draft of Terraform module that provisions EKS in private subnets and deploys helm package manager.
+
 ## Requirements
 
 No requirements.
@@ -34,3 +38,6 @@ No requirements.
 |------|-------------|
 | eks\_cluster | n/a |
 
+## References
+
+ * [`medium-deploy-eks-cluster-using-terraform`](https://gitlab.com/nicosingh/medium-deploy-eks-cluster-using-terraform) by [Nico Singh](https://gitlab.com/nicosingh)
