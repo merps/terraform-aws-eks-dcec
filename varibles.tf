@@ -1,29 +1,29 @@
 # AWS VPC EKS infrastructure
 variable "aws_vpc_eks" {
   description = "AWS VPC EKS infrastructure for private subnet/vpc deployment"
-  type = list(object({
+  type = object({
     vpc_id          = string
     private_subnets = list(string)
-  }))
+  })
 }
 
 # AWS IaC Tagging
 variable "tags" {
   description = "AWS IaC Tagging"
-  type = list(object({
+  type = object({
     prefix      = string
     environment = string
     random      = string
-  }))
+  })
 }
 
 # Kubernetes RBAC Admin and Developer Users.
 variable "users" {
   description = "Kubernetes RBAC Admin and Developer Users."
-  type = list(object({
+  type = object({
     admin     = list(string)
     developer = list(string)
-  }))
+  })
 }
 
 # ASG parameters
