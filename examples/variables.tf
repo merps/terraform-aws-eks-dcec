@@ -1,4 +1,4 @@
-variable "aws_vpc" {
+variable "aws_vpc_parameters" {
   type = object({
     region  = string
     azs     = list(string)

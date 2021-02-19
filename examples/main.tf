@@ -20,7 +20,7 @@ locals {
 # Create VPC as per requirements
 module "vpc" {
   source  = "git@gitlab.wirelessravens.org:f5labs/f5-cwl-telegraf.git//src/modules/awsInfra/vpc"
-  aws_vpc = var.aws_vpc
+  aws_vpc_parameters = var.aws_vpc_parameters
   tags = var.tags
 }
 
@@ -42,7 +42,7 @@ module "eks" {
   aws_vpc_eks                              = local.aws_vpc_eks
   tags                                     = var.tags
   developer_users                          = var.developer_users
-  namespaces                               = var.aws_vpc.azs
+  namespaces                               = var.aws_vpc_parameters.azs
   spot_termination_handler_chart_name      = var.spot_termination_handler_chart_name
   spot_termination_handler_chart_namespace = var.spot_termination_handler_chart_namespace
   spot_termination_handler_chart_repo      = var.spot_termination_handler_chart_repo
