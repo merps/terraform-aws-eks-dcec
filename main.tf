@@ -1,8 +1,13 @@
+# TODO Initial naming for cluster passing
+locals {
+  cluster_name = format("%s-eks_cluster-%s", var.tags.prefix, var.tags.random)
+}
+
 data "aws_availability_zones" "available_azs" {
   state = "available"
 }
 
-data "aws_caller_identity" "current" {} # used for accesing Account ID and ARN
+data "aws_caller_identity" "current" {} # used for accessing Account ID and ARN
 
 # render Admin & Developer users list with the structure required by EKS module
 locals {
@@ -19,7 +24,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${developer_user}"
       username = developer_user
-      groups   = ["${var.tags.prefix}-developers"]
+      groups   = ["${local.cluster_name}-developers"]
     }
   ]
   worker_groups_launch_template = [
@@ -38,7 +43,7 @@ locals {
 module "eks-cluster" {
   source           = "terraform-aws-modules/eks/aws"
   version          = "12.1.0"
-  cluster_name     = var.tags.prefix
+  cluster_name     = local.cluster_name
   cluster_version  = "1.16"
   write_kubeconfig = false
 
@@ -51,6 +56,7 @@ module "eks-cluster" {
   map_users = concat(local.admin_user_map_users, local.developer_user_map_users)
 }
 
+## Helm Deployment
 # get EKS cluster info to configure Kubernetes and Helm providers
 data "aws_eks_cluster" "cluster" {
   name = module.eks-cluster.cluster_id
@@ -99,7 +105,7 @@ resource "kubernetes_namespace" "eks_namespaces" {
 # create developers Role using RBAC
 resource "kubernetes_cluster_role" "iam_roles_developers" {
   metadata {
-    name = "${var.tags.prefix}-developers"
+    name = "${local.cluster_name}-developers"
   }
 
   rule {
@@ -124,13 +130,13 @@ resource "kubernetes_cluster_role" "iam_roles_developers" {
 # bind developer Users with their Role
 resource "kubernetes_cluster_role_binding" "iam_roles_developers" {
   metadata {
-    name = "${var.tags.prefix}-developers"
+    name = "${local.cluster_name}-developers"
   }
 
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = "${var.tags.prefix}-developers"
+    name      = "${local.cluster_name}-developers"
   }
 
   dynamic "subject" {
